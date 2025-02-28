@@ -9,6 +9,14 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug Environment Variables
+        run: |
+          if [[ -z "${GH_TOKEN}" ]]; then echo "GH_TOKEN is missing"; exit 1; else echo "GH_TOKEN is set"; fi
+          if [[ -z "${NPM_TOKEN}" ]]; then echo "NPM_TOKEN is missing"; exit 1; else echo "NPM_TOKEN is set"; fi
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
