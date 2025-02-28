@@ -5,5 +5,5 @@ interface ButtonProps {
 }
 
 export const Button: React.FC<ButtonProps> = ({ label }) => {
-  return <button className="btns">{label}</button>;
+  return <button className="btn">{label}</button>;
 };
