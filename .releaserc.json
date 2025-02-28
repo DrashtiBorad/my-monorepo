@@ -1,15 +1,9 @@
 {
-  "repositoryUrl": "https://github.com/DrashtiBorad/my-monorepo",
   "branches": ["main"],
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     "@semantic-release/changelog",
-    ["@semantic-release/github", {
-      "assets": ["dist/**"],
-      "successComment": false,
-      "failComment": false
-    }],
     "@semantic-release/npm",
     "@semantic-release/git"
   ]
