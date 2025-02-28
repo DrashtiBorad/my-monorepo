@@ -9,14 +9,6 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - name: Debug Environment Variables
-        run: |
-          if [[ -z "${GH_TOKEN}" ]]; then echo "GH_TOKEN is missing"; exit 1; else echo "GH_TOKEN is set"; fi
-          if [[ -z "${NPM_TOKEN}" ]]; then echo "NPM_TOKEN is missing"; exit 1; else echo "NPM_TOKEN is set"; fi
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
@@ -30,11 +22,26 @@ jobs:
           registry-url: "https://registry.npmjs.org/"
           always-auth: true
 
+      - name: Verify Environment Variables
+        run: |
+          if [[ -z "${GH_TOKEN}" ]]; then echo "❌ GH_TOKEN is missing"; exit 1; else echo "✅ GH_TOKEN is set"; fi
+          if [[ -z "${NPM_TOKEN}" ]]; then echo "❌ NPM_TOKEN is missing"; exit 1; else echo "✅ NPM_TOKEN is set"; fi
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Check NPM Authentication
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          npm whoami || (echo "❌ Invalid NPM_TOKEN"; exit 1)
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Install Dependencies
         run: npm ci
 
       - name: Run Semantic Release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}  # Use NODE_AUTH_TOKEN instead of NPM_TOKEN
         run: npx semantic-release
